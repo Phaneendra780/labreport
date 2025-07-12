@@ -117,14 +117,16 @@ st.markdown("""
     }
     
     /* Results section */
-    .results-section {
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-        border: 1px solid #dee2e6;
-        border-radius: 15px;
-        padding: 2rem;
-        margin: 1rem 0;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-    }
+.results-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 1rem 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    color: white; /* <-- This line sets the text color */
+}
+
     
     /* Profile section */
     .profile-section {
