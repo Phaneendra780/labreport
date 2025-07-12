@@ -17,15 +17,6 @@ from reportlab.lib.units import inch
 from datetime import datetime
 import re
 
-# Set page configuration
-st.set_page_config(
-    page_title="LabAnalyzer - Medical Lab Report Analyzer",
-    layout="wide",
-    initial_sidebar_state="collapsed",
-    page_icon="🧪"
-)
-
-# Custom CSS for white theme with proper contrast
 st.markdown("""
 <style>
     /* Main background */
@@ -116,20 +107,56 @@ st.markdown("""
         background: linear-gradient(135deg, #e7f1ff 0%, #ffffff 100%);
     }
     
-    /* Results section with white text */
+    /* Results section with better contrast */
     .results-section {
-        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-        border: 1px solid #dee2e6;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border: 2px solid #dee2e6;
         border-radius: 15px;
         padding: 2rem;
         margin: 1rem 0;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-        color: white !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        color: #212529 !important;
     }
     
-    /* Make all text within results section white */
+    /* Make all text within results section high contrast */
     .results-section * {
-        color: white !important;
+        color: #212529 !important;
+    }
+    
+    /* Specific styling for markdown elements in results */
+    .results-section h1,
+    .results-section h2,
+    .results-section h3,
+    .results-section h4,
+    .results-section h5,
+    .results-section h6 {
+        color: #1a1a1a !important;
+        font-weight: 600 !important;
+    }
+    
+    .results-section p {
+        color: #2c3e50 !important;
+        line-height: 1.6 !important;
+    }
+    
+    .results-section ul,
+    .results-section ol {
+        color: #2c3e50 !important;
+    }
+    
+    .results-section li {
+        color: #2c3e50 !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .results-section strong {
+        color: #1a1a1a !important;
+        font-weight: 700 !important;
+    }
+    
+    .results-section em {
+        color: #495057 !important;
+        font-style: italic !important;
     }
     
     /* Profile section */
@@ -183,32 +210,35 @@ st.markdown("""
         font-weight: 500;
     }
     
-    /* Lab values styling */
+    /* Lab values styling with better contrast */
     .lab-value-normal {
         background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-        border: 1px solid #28a745;
+        border: 2px solid #28a745;
         border-radius: 8px;
         padding: 1rem;
         margin: 0.5rem 0;
-        color: #155724;
+        color: #155724 !important;
+        font-weight: 600;
     }
     
     .lab-value-high {
         background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
-        border: 1px solid #dc3545;
+        border: 2px solid #dc3545;
         border-radius: 8px;
         padding: 1rem;
         margin: 0.5rem 0;
-        color: #721c24;
+        color: #721c24 !important;
+        font-weight: 600;
     }
     
     .lab-value-low {
         background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-        border: 1px solid #ffc107;
+        border: 2px solid #ffc107;
         border-radius: 8px;
         padding: 1rem;
         margin: 0.5rem 0;
-        color: #856404;
+        color: #856404 !important;
+        font-weight: 600;
     }
     
     /* Footer styling */
@@ -221,7 +251,7 @@ st.markdown("""
         color: #6c757d;
     }
     
-    /* Ensure proper text contrast */
+    /* Ensure proper text contrast for main content */
     .stMarkdown, .stText, p, span, div {
         color: #212529 !important;
     }
@@ -242,6 +272,25 @@ st.markdown("""
         box-shadow: 0 4px 16px rgba(0,0,0,0.05);
     }
     
+    .metric-card h4 {
+        color: #1a1a1a !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .metric-card p {
+        color: #2c3e50 !important;
+        line-height: 1.5 !important;
+    }
+    
+    .metric-card ul {
+        text-align: left !important;
+    }
+    
+    .metric-card li {
+        color: #495057 !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
     /* How it works section */
     .how-it-works {
         background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
@@ -249,6 +298,21 @@ st.markdown("""
         border-radius: 15px;
         padding: 2rem;
         margin: 2rem 0;
+    }
+    
+    .how-it-works h3 {
+        color: #1a1a1a !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .how-it-works h4 {
+        color: #2c3e50 !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .how-it-works p {
+        color: #495057 !important;
+        line-height: 1.5 !important;
     }
     
     /* Step indicators */
@@ -263,9 +327,92 @@ st.markdown("""
         justify-content: center;
         font-weight: bold;
         margin-right: 1rem;
+        flex-shrink: 0;
+    }
+    
+    /* Override Streamlit's default text colors */
+    .stMarkdown h1,
+    .stMarkdown h2,
+    .stMarkdown h3,
+    .stMarkdown h4,
+    .stMarkdown h5,
+    .stMarkdown h6 {
+        color: #1a1a1a !important;
+    }
+    
+    .stMarkdown p {
+        color: #2c3e50 !important;
+    }
+    
+    .stMarkdown ul,
+    .stMarkdown ol {
+        color: #2c3e50 !important;
+    }
+    
+    .stMarkdown li {
+        color: #2c3e50 !important;
+    }
+    
+    .stMarkdown strong {
+        color: #1a1a1a !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Enhance visibility of analysis results */
+    .analysis-content {
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .analysis-content h3 {
+        color: #1a1a1a !important;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem !important;
+    }
+    
+    .analysis-content h4 {
+        color: #2c3e50 !important;
+        margin-top: 1.5rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+    
+    .analysis-content p {
+        color: #495057 !important;
+        line-height: 1.6 !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .analysis-content ul {
+        padding-left: 1.5rem !important;
+    }
+    
+    .analysis-content li {
+        color: #495057 !important;
+        margin-bottom: 0.5rem !important;
+        line-height: 1.5 !important;
     }
 </style>
 """, unsafe_allow_html=True)
+
+# API Keys
+TAVILY_API_KEY = st.secrets.get("TAVILY_API_KEY")
+GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
+
+# Check if API keys are available
+if not TAVILY_API_KEY or not GOOGLE_API_KEY:
+    st.markdown("""
+    <div class="error-banner">
+        <h3>🔑 Configuration Error</h3>
+        <p>API keys are missing. Please check your configuration and try again.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    st.stop()
+
 # API Keys
 TAVILY_API_KEY = st.secrets.get("TAVILY_API_KEY")
 GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
