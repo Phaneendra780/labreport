@@ -389,7 +389,7 @@ st.markdown("""
     }
     
     .analysis-content p {
-        color: #495057 !important;
+        color: white !important;
         line-height: 1.6 !important;
         margin-bottom: 1rem !important;
     }
