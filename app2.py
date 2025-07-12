@@ -100,6 +100,7 @@ st.markdown("""
         text-align: center;
         margin: 1rem 0;
         transition: all 0.3s ease;
+        color:#ffffff;
     }
     
     .upload-section:hover {
