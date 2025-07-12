@@ -142,7 +142,7 @@ st.markdown("""
     }
     
     .results-section p {
-        color: #2c3e50 !important;
+        color: #ffffff !important;
         line-height: 1.6 !important;
     }
     
