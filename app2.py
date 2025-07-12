@@ -16,411 +16,478 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image as Re
 from reportlab.lib.units import inch
 from datetime import datetime
 import re
+import time
 
+# Set page configuration
+st.set_page_config(
+    page_title="LabAnalyzer - Medical Lab Report Analyzer",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+    page_icon="🧪"
+)
+
+# Custom CSS for enhanced UI with animations and better contrast
 st.markdown("""
 <style>
-    /* Main background */
-/* Fixed CSS for LabAnalyzer - Text Color Issues Resolved */
-
-/* Main background */
-.main {
-    background-color: #ffffff;
-    color: #1a1a1a;
-}
-
-/* Header styling */
-.main-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 15px;
-    margin-bottom: 2rem;
-    text-align: center;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-}
-
-/* Info banners (non-clickable) */
-.info-banner {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-    border: 2px solid #2196f3;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1rem 0;
-    color: #0d47a1;
-    box-shadow: 0 4px 16px rgba(33,150,243,0.15);
-}
-
-/* Warning banners */
-.warning-banner {
-    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-    border: 2px solid #ff9800;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1rem 0;
-    color: #e65100;
-    box-shadow: 0 4px 16px rgba(255,152,0,0.15);
-}
-
-/* Success banners */
-.success-banner {
-    background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
-    border: 2px solid #4caf50;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1rem 0;
-    color: #1b5e20;
-    box-shadow: 0 4px 16px rgba(76,175,80,0.15);
-}
-
-/* Error banners */
-.error-banner {
-    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-    border: 2px solid #f44336;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1rem 0;
-    color: #c62828;
-    box-shadow: 0 4px 16px rgba(244,67,54,0.15);
-}
-
-/* Section headers */
-.section-header {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-left: 5px solid #6c757d;
-    padding: 1rem 1.5rem;
-    margin: 1.5rem 0 1rem 0;
-    border-radius: 0 8px 8px 0;
-    color: #495057;
-    font-weight: 600;
-}
-
-/* Upload area styling */
-.upload-section {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border: 2px dashed #6c757d;
-    border-radius: 15px;
-    padding: 2rem;
-    text-align: center;
-    margin: 1rem 0;
-    transition: all 0.3s ease;
-}
-
-.upload-section:hover {
-    border-color: #007bff;
-    background: linear-gradient(135deg, #e7f1ff 0%, #ffffff 100%);
-}
-
-/* FIXED: Results section with proper text colors */
-.results-section {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border: 2px solid #dee2e6;
-    border-radius: 15px;
-    padding: 2rem;
-    margin: 1rem 0;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-}
-
-/* FIXED: Specific text color rules for results section */
-.results-section h1,
-.results-section h2,
-.results-section h3,
-.results-section h4,
-.results-section h5,
-.results-section h6 {
-    color: #1a1a1a !important;
-    font-weight: 600 !important;
-}
-
-.results-section p {
-    color: #2c3e50 !important;
-    line-height: 1.6 !important;
-}
-
-.results-section ul,
-.results-section ol {
-    color: #2c3e50 !important;
-}
-
-.results-section li {
-    color: #2c3e50 !important;
-    margin-bottom: 0.5rem !important;
-}
-
-.results-section strong {
-    color: #1a1a1a !important;
-    font-weight: 700 !important;
-}
-
-.results-section em {
-    color: #495057 !important;
-    font-style: italic !important;
-}
-
-/* FIXED: Ensure all text in results section is readable */
-.results-section * {
-    color: #2c3e50 !important;
-}
-
-/* Override for headings specifically */
-.results-section h1 *,
-.results-section h2 *,
-.results-section h3 *,
-.results-section h4 *,
-.results-section h5 *,
-.results-section h6 * {
-    color: #1a1a1a !important;
-}
-
-/* Profile section */
-.profile-section {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border: 1px solid #dee2e6;
-    border-radius: 15px;
-    padding: 1.5rem;
-    margin: 1rem 0;
-}
-
-/* Button styling */
-.stButton > button {
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 0.75rem 2rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 16px rgba(0,123,255,0.3);
-}
-
-.stButton > button:hover {
-    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,123,255,0.4);
-}
-
-/* Download button styling */
-.stDownloadButton > button {
-    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 0.75rem 2rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 16px rgba(40,167,69,0.3);
-}
-
-.stDownloadButton > button:hover {
-    background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(40,167,69,0.4);
-}
-
-/* Lab values styling with better contrast */
-.lab-value-normal {
-    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-    border: 2px solid #28a745;
-    border-radius: 8px;
-    padding: 1rem;
-    margin: 0.5rem 0;
-    color: #155724 !important;
-    font-weight: 600;
-}
-
-.lab-value-high {
-    background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
-    border: 2px solid #dc3545;
-    border-radius: 8px;
-    padding: 1rem;
-    margin: 0.5rem 0;
-    color: #721c24 !important;
-    font-weight: 600;
-}
-
-.lab-value-low {
-    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-    border: 2px solid #ffc107;
-    border-radius: 8px;
-    padding: 1rem;
-    margin: 0.5rem 0;
-    color: #856404 !important;
-    font-weight: 600;
-}
-
-/* Footer styling */
-.footer {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-top: 1px solid #dee2e6;
-    padding: 2rem;
-    margin-top: 3rem;
-    text-align: center;
-    color: #6c757d;
-}
-
-/* Metric styling */
-.metric-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    border: 1px solid #dee2e6;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1rem 0;
-    text-align: center;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-}
-
-.metric-card h4 {
-    color: #1a1a1a !important;
-    margin-bottom: 1rem !important;
-}
-
-.metric-card p {
-    color: #2c3e50 !important;
-    line-height: 1.5 !important;
-}
-
-.metric-card ul {
-    text-align: left !important;
-}
-
-.metric-card li {
-    color: #495057 !important;
-    margin-bottom: 0.5rem !important;
-}
-
-/* How it works section */
-.how-it-works {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border: 1px solid #dee2e6;
-    border-radius: 15px;
-    padding: 2rem;
-    margin: 2rem 0;
-}
-
-.how-it-works h3 {
-    color: #1a1a1a !important;
-    margin-bottom: 1rem !important;
-}
-
-.how-it-works h4 {
-    color: #2c3e50 !important;
-    margin-bottom: 0.5rem !important;
-}
-
-.how-it-works p {
-    color: #495057 !important;
-    line-height: 1.5 !important;
-}
-
-/* Step indicators */
-.step-indicator {
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-    color: white;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    margin-right: 1rem;
-    flex-shrink: 0;
-}
-
-/* FIXED: Override Streamlit's default text colors for better readability */
-.stMarkdown h1,
-.stMarkdown h2,
-.stMarkdown h3,
-.stMarkdown h4,
-.stMarkdown h5,
-.stMarkdown h6 {
-    color: #1a1a1a !important;
-}
-
-.stMarkdown p {
-    color: #2c3e50 !important;
-}
-
-.stMarkdown ul,
-.stMarkdown ol {
-    color: #2c3e50 !important;
-}
-
-.stMarkdown li {
-    color: #2c3e50 !important;
-}
-
-.stMarkdown strong {
-    color: #1a1a1a !important;
-    font-weight: 700 !important;
-}
-
-/* FIXED: Enhanced visibility of analysis results */
-.analysis-content {
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin: 1rem 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.analysis-content h3 {
-    color: #1a1a1a !important;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem !important;
-}
-
-.analysis-content h4 {
-    color: #2c3e50 !important;
-    margin-top: 1.5rem !important;
-    margin-bottom: 0.8rem !important;
-}
-
-.analysis-content p {
-    color: #2c3e50 !important;
-    line-height: 1.6 !important;
-    margin-bottom: 1rem !important;
-}
-
-.analysis-content ul {
-    padding-left: 1.5rem !important;
-}
-
-.analysis-content li {
-    color: #495057 !important;
-    margin-bottom: 0.5rem !important;
-    line-height: 1.5 !important;
-}
-
-/* FIXED: Ensure proper contrast for all text elements */
-.main * {
-    color: #2c3e50;
-}
-
-/* Override for specific elements that need different colors */
-.main h1, .main h2, .main h3, .main h4, .main h5, .main h6 {
-    color: #1a1a1a !important;
-}
-
-.main .info-banner *,
-.main .warning-banner *,
-.main .success-banner *,
-.main .error-banner *,
-.main .section-header * {
-    color: inherit !important;
-}
-
-/* Sidebar styling */
-.sidebar .sidebar-content {
-    background-color: #f8f9fa;
-}
-
-/* FIXED: Remove any remaining problematic color declarations */
-.high-contrast-text {
-    color: #212529 !important;
-    font-weight: 500;
-}
+    /* Import modern fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    /* Root variables for consistent theming */
+    :root {
+        --primary-color: #2563eb;
+        --primary-hover: #1d4ed8;
+        --secondary-color: #f8fafc;
+        --accent-color: #10b981;
+        --warning-color: #f59e0b;
+        --error-color: #ef4444;
+        --success-color: #10b981;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --border-color: #e5e7eb;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        --border-radius: 12px;
+    }
+    
+    /* Global styles */
+    .stApp {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+    
+    /* Main container */
+    .main-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        margin: 1rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: slideUp 0.6s ease-out;
+    }
+    
+    /* Animations */
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    @keyframes shimmer {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+    }
+    
+    /* Header styling */
+    .main-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        animation: fadeIn 0.8s ease-out;
+    }
+    
+    .main-header h1 {
+        color: var(--text-primary);
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .main-header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        font-weight: 400;
+    }
+    
+    /* Card components */
+    .custom-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin: 1rem 0;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        animation: fadeIn 0.6s ease-out;
+    }
+    
+    .custom-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    /* Banner styles (non-clickable) */
+    .banner-info {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+    
+    .banner-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+    }
+    
+    .banner-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    }
+    
+    .banner-error {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+    }
+    
+    /* Clickable elements */
+    .clickable-card {
+        cursor: pointer;
+        background: white;
+        border: 2px solid var(--border-color);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .clickable-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+        transition: left 0.6s ease;
+    }
+    
+    .clickable-card:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+    }
+    
+    .clickable-card:hover::before {
+        left: 100%;
+    }
+    
+    /* Button styles */
+    .stButton > button {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stButton > button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.6s ease;
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    }
+    
+    .stButton > button:hover::before {
+        left: 100%;
+    }
+    
+    .stButton > button:active {
+        transform: translateY(0);
+    }
+    
+    /* Upload area styling */
+    .upload-area {
+        border: 3px dashed var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        text-align: center;
+        background: rgba(248, 250, 252, 0.5);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .upload-area:hover {
+        border-color: var(--primary-color);
+        background: rgba(37, 99, 235, 0.05);
+        transform: scale(1.02);
+    }
+    
+    /* Progress indicators */
+    .progress-container {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        margin: 1rem 0;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: var(--secondary-color);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 4px;
+        animation: shimmer 2s infinite;
+        background-size: 1000px 100%;
+    }
+    
+    /* Status indicators */
+    .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    .status-success {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success-color);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    
+    .status-warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning-color);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    
+    .status-error {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--error-color);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    /* Loading spinner */
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border-color);
+        border-top: 2px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 0.5rem;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Expandable sections */
+    .expandable-section {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .expandable-section:hover {
+        box-shadow: var(--shadow-md);
+    }
+    
+    /* File info display */
+    .file-info {
+        background: rgba(16, 185, 129, 0.05);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        margin: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        animation: slideUp 0.4s ease-out;
+    }
+    
+    .file-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--success-color);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        animation: pulse 2s infinite;
+    }
+    
+    /* Typography improvements */
+    .section-title {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .section-subtitle {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        font-weight: 400;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Health status indicators */
+    .health-status {
+        padding: 0.75rem;
+        border-radius: var(--border-radius);
+        margin: 0.5rem 0;
+        border-left: 4px solid;
+        animation: slideUp 0.5s ease-out;
+    }
+    
+    .health-status.normal {
+        background: rgba(16, 185, 129, 0.1);
+        border-left-color: var(--success-color);
+        color: var(--success-color);
+    }
+    
+    .health-status.high {
+        background: rgba(239, 68, 68, 0.1);
+        border-left-color: var(--error-color);
+        color: var(--error-color);
+    }
+    
+    .health-status.low {
+        background: rgba(245, 158, 11, 0.1);
+        border-left-color: var(--warning-color);
+        color: var(--warning-color);
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .main-container {
+            margin: 0.5rem;
+            padding: 1rem;
+        }
+        
+        .main-header h1 {
+            font-size: 2rem;
+        }
+        
+        .custom-card {
+            padding: 1rem;
+        }
+    }
+    
+    /* Accessibility improvements */
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+    
+    /* Focus states for keyboard navigation */
+    .stButton > button:focus,
+    .clickable-card:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        :root {
+            --primary-color: #0000ff;
+            --text-primary: #000000;
+            --text-secondary: #333333;
+            --border-color: #000000;
+        }
+        
+        .custom-card {
+            border: 2px solid var(--border-color);
+        }
+    }
+    
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --border-color: #374151;
+            --secondary-color: #1f2937;
+        }
+        
+        .custom-card {
+            background: #111827;
+            border-color: var(--border-color);
+        }
+        
+        .main-container {
+            background: rgba(17, 24, 39, 0.95);
+        }
+    }
+</style>
 """, unsafe_allow_html=True)
 
 # API Keys
@@ -429,26 +496,7 @@ GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
 
 # Check if API keys are available
 if not TAVILY_API_KEY or not GOOGLE_API_KEY:
-    st.markdown("""
-    <div class="error-banner">
-        <h3>🔑 Configuration Error</h3>
-        <p>API keys are missing. Please check your configuration and try again.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    st.stop()
-
-# API Keys
-TAVILY_API_KEY = st.secrets.get("TAVILY_API_KEY")
-GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
-
-# Check if API keys are available
-if not TAVILY_API_KEY or not GOOGLE_API_KEY:
-    st.markdown("""
-    <div class="error-banner">
-        <h3>🔑 Configuration Error</h3>
-        <p>API keys are missing. Please check your configuration and try again.</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.error("🔑 API keys are missing. Please check your configuration.")
     st.stop()
 
 MAX_IMAGE_WIDTH = 300
@@ -462,10 +510,8 @@ Focus on:
 1. Extracting all test parameters, values, and reference ranges
 2. Identifying which parameters are within normal limits and which are abnormal
 3. Explaining what each abnormal parameter means in simple terms
-4. Providing specific lifestyle and dietary recommendations based ONLY on the actual lab results
+4. Providing specific lifestyle and dietary recommendations for abnormal values
 5. Suggesting when to consult a healthcare provider
-
-IMPORTANT: Base ALL recommendations strictly on the specific lab results provided. Do not provide generic advice.
 """
 
 INSTRUCTIONS = """
@@ -481,24 +527,24 @@ Analyze the lab report image and provide information in this structured format:
 - Explain potential health implications
 
 **Lifestyle Changes Needed:**
-- Provide specific, actionable lifestyle modifications ONLY for the abnormal values found
-- Include exercise recommendations, sleep habits, stress management specific to the conditions indicated
-- Be specific about duration and frequency based on the severity of abnormal values
+- Provide specific, actionable lifestyle modifications for abnormal values
+- Include exercise recommendations, sleep habits, stress management
+- Be specific about duration and frequency
 
 **Diet Recommendations:**
-- Suggest specific foods to eat more of ONLY based on the specific deficiencies or excesses shown
-- List foods to avoid or limit based on the actual lab results
-- Provide meal planning tips relevant to the specific conditions found
-- Include hydration recommendations if relevant to the lab results
+- Suggest specific foods to eat more of
+- List foods to avoid or limit
+- Provide meal planning tips if relevant
+- Include hydration recommendations
 
 **When to See a Doctor:**
-- Indicate urgency level based on the severity of abnormal values
-- Explain red flags specific to the results that require immediate attention
-- Suggest which specialist to consult based on the specific abnormalities found
+- Indicate urgency level (immediate, within days, routine follow-up)
+- Explain red flags that require immediate attention
+- Suggest which specialist to consult if needed
 
 **Follow-up Testing:**
-- Recommend when to retest based on the specific abnormal values
-- Suggest additional tests only if directly related to the abnormal results found
+- Recommend when to retest
+- Suggest additional tests if needed
 
 Always emphasize that this analysis is for educational purposes and should not replace professional medical advice.
 """
@@ -508,14 +554,14 @@ You are a health and wellness expert specializing in personalized lifestyle and 
 
 Based on the specific abnormal lab values identified, provide detailed, actionable recommendations including:
 
-1. **Detailed Meal Plans:** Create specific meal suggestions ONLY for addressing the identified deficiencies or excesses
-2. **Exercise Routines:** Recommend specific types, duration, and frequency based on the health conditions indicated by the lab results
-3. **Lifestyle Modifications:** Sleep schedule, stress management, habits to change - all specific to the lab findings
-4. **Natural Remedies:** Safe, evidence-based supplements or natural approaches for the specific conditions found
-5. **Monitoring Tips:** How to track progress specific to the abnormal lab values identified
-6. **Timeline:** Expected timeframe for improvements based on the severity of abnormal values
+1. **Detailed Meal Plans:** Specific breakfast, lunch, dinner, and snack suggestions
+2. **Exercise Routines:** Specific types, duration, and frequency of physical activities
+3. **Lifestyle Modifications:** Sleep schedule, stress management, habits to change
+4. **Natural Remedies:** Safe, evidence-based supplements or natural approaches
+5. **Monitoring Tips:** How to track progress and improvements
+6. **Timeline:** Expected timeframe for improvements with lifestyle changes
 
-CRITICAL: Make all recommendations specific to the actual lab results provided. Do not provide generic health advice.
+Make all recommendations practical, specific, and easy to follow for the average person.
 """
 
 @st.cache_resource
@@ -571,12 +617,25 @@ def analyze_lab_report(image_path):
         return None
 
     try:
-        with st.spinner("🔬 Analyzing lab report and generating health insights..."):
-            response = agent.run(
-                "Analyze this lab report image and provide comprehensive health insights in simple, easy-to-understand language. Include all test values, explain abnormal results, and provide specific lifestyle and dietary recommendations ONLY based on the actual lab results shown. Do not provide generic advice.",
-                images=[image_path],
-            )
-            return response.content.strip()
+        # Create animated progress indicator
+        progress_container = st.empty()
+        progress_container.markdown("""
+        <div class="progress-container">
+            <div class="loading-spinner"></div>
+            <strong>Analyzing your lab report...</strong>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        response = agent.run(
+            "Analyze this lab report image and provide comprehensive health insights in simple, easy-to-understand language. Include all test values, explain abnormal results, and provide specific lifestyle and dietary recommendations.",
+            images=[image_path],
+        )
+        
+        progress_container.empty()
+        return response.content.strip()
     except Exception as e:
         st.error(f"🚨 Error analyzing lab report: {e}")
         return None
@@ -588,24 +647,35 @@ def get_detailed_recommendations(lab_analysis, user_profile):
         return None
 
     try:
-        with st.spinner("🎯 Generating personalized recommendations based on your specific lab results..."):
-            query = f"""
-            Based on this lab report analysis: {lab_analysis}
-            
-            User Profile: {user_profile}
-            
-            Provide detailed, personalized lifestyle and dietary recommendations ONLY for the specific abnormal lab values found. Include:
-            - Specific meal plans targeting the identified deficiencies or excesses
-            - Detailed exercise routines appropriate for the conditions indicated
-            - Lifestyle modifications specific to the lab findings
-            - Natural remedies for the specific conditions found
-            - Monitoring and tracking tips for the abnormal values
-            - Timeline for expected improvements based on severity
-            
-            Do NOT provide generic health advice. Base everything on the specific lab results provided.
-            """
-            response = lifestyle_agent.run(query)
-            return response.content.strip()
+        # Create animated progress indicator
+        progress_container = st.empty()
+        progress_container.markdown("""
+        <div class="progress-container">
+            <div class="loading-spinner"></div>
+            <strong>Creating personalized recommendations...</strong>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        query = f"""
+        Based on this lab report analysis: {lab_analysis}
+        
+        User Profile: {user_profile}
+        
+        Provide detailed, personalized lifestyle and dietary recommendations including:
+        - Specific meal plans and recipes
+        - Detailed exercise routines
+        - Lifestyle modifications
+        - Natural remedies and supplements
+        - Monitoring and tracking tips
+        - Timeline for expected improvements
+        """
+        response = lifestyle_agent.run(query)
+        
+        progress_container.empty()
+        return response.content.strip()
     except Exception as e:
         st.error(f"🚨 Error generating recommendations: {e}")
         return None
@@ -743,7 +813,7 @@ def create_lab_report_pdf(image_data, analysis_results, detailed_recommendations
         return None
 
 def display_health_status(value, reference_range, parameter_name):
-    """Display health status with color coding."""
+    """Display health status with enhanced styling and animations."""
     try:
         # Extract numeric value if possible
         if isinstance(value, str):
@@ -757,26 +827,200 @@ def display_health_status(value, reference_range, parameter_name):
             
             if numeric_value < min_val:
                 st.markdown(f"""
-                <div class="lab-value-low">
-                    <strong>🔻 {parameter_name}:</strong> {value} (LOW - Normal: {reference_range})
+                <div class="health-status low">
+                    <strong>🔻 {parameter_name}:</strong> {value} <span class="status-indicator status-warning">LOW</span>
+                    <br><small>Normal Range: {reference_range}</small>
                 </div>
                 """, unsafe_allow_html=True)
             elif numeric_value > max_val:
                 st.markdown(f"""
-                <div class="lab-value-high">
-                    <strong>🔺 {parameter_name}:</strong> {value} (HIGH - Normal: {reference_range})
+                <div class="health-status high">
+                    <strong>🔺 {parameter_name}:</strong> {value} <span class="status-indicator status-error">HIGH</span>
+                    <br><small>Normal Range: {reference_range}</small>
                 </div>
                 """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
-                <div class="lab-value-normal">
-                    <strong>✅ {parameter_name}:</strong> {value} (NORMAL - Range: {reference_range})
+                <div class="health-status normal">
+                    <strong>✅ {parameter_name}:</strong> {value} <span class="status-indicator status-success">NORMAL</span>
+                    <br><small>Normal Range: {reference_range}</small>
                 </div>
                 """, unsafe_allow_html=True)
         else:
-            st.info(f"ℹ️ **{parameter_name}:** {value} (Reference: {reference_range})")
+            st.markdown(f"""
+            <div class="health-status normal">
+                <strong>ℹ️ {parameter_name}:</strong> {value}
+                <br><small>Reference: {reference_range}</small>
+            </div>
+            """, unsafe_allow_html=True)
     except:
-        st.info(f"ℹ️ **{parameter_name}:** {value} (Reference: {reference_range})")
+        st.markdown(f"""
+        <div class="health-status normal">
+            <strong>ℹ️ {parameter_name}:</strong> {value}
+            <br><small>Reference: {reference_range}</small>
+        </div>
+        """, unsafe_allow_html=True)
+
+def create_animated_header():
+    """Create an animated header with modern styling."""
+    st.markdown("""
+    <div class="main-header">
+        <h1>🧪 LabAnalyzer</h1>
+        <p>Advanced Medical Lab Report Analysis with AI-Powered Insights</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+def create_disclaimer_banner():
+    """Create an animated disclaimer banner."""
+    st.markdown("""
+    <div class="custom-card banner-warning">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="font-size: 2rem;">⚠️</div>
+            <div>
+                <h3 style="margin: 0; color: white;">MEDICAL DISCLAIMER</h3>
+                <p style="margin: 0.5rem 0 0 0; color: white; opacity: 0.9;">
+                    This tool provides educational information only and should not replace professional medical advice. 
+                    Always consult with your healthcare provider for proper medical interpretation and treatment decisions.
+                </p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def create_upload_section():
+    """Create an enhanced upload section with animations."""
+    st.markdown("""
+    <div class="section-title">
+        📋 Upload Your Lab Report
+    </div>
+    <div class="section-subtitle">
+        Upload a clear image of your lab report for AI-powered analysis
+    </div>
+    """, unsafe_allow_html=True)
+
+def create_profile_section():
+    """Create an enhanced profile section."""
+    st.markdown("""
+    <div class="section-title">
+        👤 Personal Health Profile
+    </div>
+    <div class="section-subtitle">
+        Add your details for personalized health recommendations
+    </div>
+    """, unsafe_allow_html=True)
+
+def create_results_section():
+    """Create an enhanced results section."""
+    st.markdown("""
+    <div class="section-title">
+        📊 Your Health Analysis
+    </div>
+    <div class="section-subtitle">
+        Comprehensive insights and personalized recommendations
+    </div>
+    """, unsafe_allow_html=True)
+
+def display_file_info(uploaded_file):
+    """Display file information with enhanced styling."""
+    file_size = len(uploaded_file.getvalue()) / 1024  # Convert to KB
+    st.markdown(f"""
+    <div class="file-info">
+        <div class="file-icon">📄</div>
+        <div>
+            <strong>{uploaded_file.name}</strong>
+            <br><small>{file_size:.1f} KB • {uploaded_file.type}</small>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def create_health_tips_section():
+    """Create animated health tips section."""
+    st.markdown("""
+    <div class="section-title">
+        🏥 Essential Health Guidelines
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("""
+        <div class="custom-card">
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🥗</div>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Nutrition Excellence</h3>
+            </div>
+            <ul style="color: var(--text-secondary); line-height: 1.6;">
+                <li>Consume 5-9 servings of colorful fruits and vegetables daily</li>
+                <li>Stay hydrated with 8-10 glasses of water throughout the day</li>
+                <li>Choose whole grains over refined carbohydrates</li>
+                <li>Limit processed foods and added sugars</li>
+                <li>Include healthy fats from nuts, seeds, and fish</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div class="custom-card">
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🏃</div>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Active Lifestyle</h3>
+            </div>
+            <ul style="color: var(--text-secondary); line-height: 1.6;">
+                <li>Aim for 150 minutes of moderate exercise weekly</li>
+                <li>Include both cardiovascular and strength training</li>
+                <li>Take movement breaks every 30 minutes when sitting</li>
+                <li>Find physical activities you genuinely enjoy</li>
+                <li>Start slowly and gradually increase intensity</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+        <div class="custom-card">
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">😴</div>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Wellness Habits</h3>
+            </div>
+            <ul style="color: var(--text-secondary); line-height: 1.6;">
+                <li>Get 7-9 hours of quality sleep nightly</li>
+                <li>Practice stress management techniques daily</li>
+                <li>Avoid smoking and limit alcohol consumption</li>
+                <li>Schedule regular preventive health checkups</li>
+                <li>Maintain strong social connections</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+
+def create_how_it_works_section():
+    """Create an animated how it works section."""
+    st.markdown("""
+    <div class="section-title">
+        🔬 How LabAnalyzer Works
+    </div>
+    """, unsafe_allow_html=True)
+    
+    steps = [
+        ("📤", "Upload", "Upload your lab report image in any common format"),
+        ("👤", "Profile", "Add your personal health details for customized insights"),
+        ("🤖", "AI Analysis", "Our advanced AI analyzes your results with medical precision"),
+        ("📊", "Insights", "Get simple explanations of your health status"),
+        ("🎯", "Recommendations", "Receive personalized lifestyle and dietary guidance"),
+        ("📄", "Report", "Download your complete health analysis as a PDF")
+    ]
+    
+    cols = st.columns(3)
+    for i, (icon, title, description) in enumerate(steps):
+        with cols[i % 3]:
+            st.markdown(f"""
+            <div class="custom-card clickable-card" style="text-align: center; margin-bottom: 1rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">{icon}</div>
+                <h4 style="color: var(--text-primary); margin-bottom: 0.5rem;">{title}</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.4;">{description}</p>
+            </div>
+            """, unsafe_allow_html=True)
 
 def main():
     # Initialize session state
@@ -788,78 +1032,87 @@ def main():
         st.session_state.original_image = None
     if 'user_profile' not in st.session_state:
         st.session_state.user_profile = ""
+    if 'analysis_complete' not in st.session_state:
+        st.session_state.analysis_complete = False
 
-    # Header
-    st.markdown("""
-    <div class="main-header">
-        <h1>🧪 LabAnalyzer</h1>
-        <h3>Medical Lab Report Analyzer</h3>
-        <p>Get simple explanations of your lab results with personalized health recommendations</p>
-    </div>
-    """, unsafe_allow_html=True)
+    # Main container
+    st.markdown('<div class="main-container">', unsafe_allow_html=True)
     
-    # Medical disclaimer banner
-    st.markdown("""
-    <div class="warning-banner">
-        <h3>⚠️ MEDICAL DISCLAIMER</h3>
-        <p><strong>This tool provides educational information only and should not replace professional medical advice.</strong></p>
-        <p>Always consult with your healthcare provider for proper medical interpretation and treatment decisions.</p>
-    </div>
-    """, unsafe_allow_html=True)
+    # Header
+    create_animated_header()
+    
+    # Disclaimer banner
+    create_disclaimer_banner()
     
     # Main content
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns([1, 1], gap="large")
     
     with col1:
-        st.markdown('<div class="section-header">📋 Upload Lab Report</div>', unsafe_allow_html=True)
+        # Upload section
+        create_upload_section()
         
         uploaded_file = st.file_uploader(
-            "Upload your lab report image",
+            "Choose your lab report file",
             type=["jpg", "jpeg", "png", "pdf", "webp"],
-            help="Upload a clear image of your lab report or test results"
+            help="Upload a clear image of your lab report for best results",
+            label_visibility="collapsed"
         )
         
         if uploaded_file:
-            # Display uploaded image
+            # Display uploaded image with enhanced styling
             if uploaded_file.type.startswith('image/'):
                 resized_image = resize_image_for_display(uploaded_file)
                 if resized_image:
-                    st.image(resized_image, caption="Uploaded Lab Report", width=MAX_IMAGE_WIDTH)
+                    st.markdown("""
+                    <div class="custom-card" style="text-align: center;">
+                        <h4 style="color: var(--text-primary); margin-bottom: 1rem;">📋 Your Lab Report</h4>
+                    """, unsafe_allow_html=True)
+                    st.image(resized_image, width=MAX_IMAGE_WIDTH)
+                    st.markdown("</div>", unsafe_allow_html=True)
                     
                     # Display file info
-                    file_size = len(uploaded_file.getvalue()) / 1024  # Convert to KB
-                    st.markdown(f"""
-                    <div class="info-banner">
-                        <strong>📁 File:</strong> {uploaded_file.name} • {file_size:.1f} KB
-                    </div>
-                    """, unsafe_allow_html=True)
+                    display_file_info(uploaded_file)
         
         # User profile section
-        st.markdown('<div class="section-header">👤 Your Profile (Optional)</div>', unsafe_allow_html=True)
-        with st.expander("📝 Add your details for personalized recommendations"):
+        create_profile_section()
+        
+        with st.expander("🔧 Customize Your Health Profile", expanded=False):
             st.markdown("""
-            <div class="info-banner">
-                <p><strong>Why provide your profile?</strong> This helps us give you more targeted recommendations based on your specific situation and health needs.</p>
+            <div class="custom-card">
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    Providing your health details helps us create more accurate and personalized recommendations.
+                </p>
             </div>
             """, unsafe_allow_html=True)
             
-            age = st.number_input("Age", min_value=1, max_value=120, value=30)
-            gender = st.selectbox("Gender", ["Male", "Female", "Other"])
+            col_age, col_gender = st.columns(2)
+            with col_age:
+                age = st.number_input("Age", min_value=1, max_value=120, value=30, help="Your current age")
+            with col_gender:
+                gender = st.selectbox("Gender", ["Male", "Female", "Other"], help="Biological sex for reference ranges")
+            
             activity_level = st.selectbox(
                 "Activity Level", 
-                ["Sedentary", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"]
+                ["Sedentary", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"],
+                help="Your typical daily activity level"
             )
+            
             current_conditions = st.text_area(
                 "Current Health Conditions",
-                placeholder="e.g., Diabetes, Hypertension, Thyroid issues..."
+                placeholder="e.g., Diabetes, Hypertension, Thyroid issues, Heart disease...",
+                help="List any diagnosed medical conditions"
             )
+            
             medications = st.text_area(
                 "Current Medications",
-                placeholder="e.g., Metformin, Lisinopril, Levothyroxine..."
+                placeholder="e.g., Metformin, Lisinopril, Levothyroxine, Aspirin...",
+                help="List medications you're currently taking"
             )
+            
             dietary_preferences = st.text_area(
                 "Dietary Preferences/Restrictions",
-                placeholder="e.g., Vegetarian, Gluten-free, Diabetic diet..."
+                placeholder="e.g., Vegetarian, Gluten-free, Diabetic diet, Low-sodium...",
+                help="Any dietary restrictions or preferences"
             )
             
             # Create user profile string
@@ -873,86 +1126,128 @@ def main():
             """
             st.session_state.user_profile = user_profile
         
-        # Analyze button
-        if uploaded_file and st.button("🔬 Analyze Lab Report", use_container_width=True):
-            # Save uploaded file and analyze
-            temp_path = save_uploaded_file(uploaded_file)
-            if temp_path:
-                try:
-                    # Analyze lab report
-                    analysis_result = analyze_lab_report(temp_path)
-                    
-                    if analysis_result:
-                        st.session_state.analysis_results = analysis_result
-                        st.session_state.original_image = uploaded_file.getvalue()
+        # Analyze button with enhanced styling
+        if uploaded_file:
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("🔬 Analyze Lab Report", type="primary", use_container_width=True):
+                # Save uploaded file and analyze
+                temp_path = save_uploaded_file(uploaded_file)
+                if temp_path:
+                    try:
+                        # Show success message
+                        st.success("✅ File uploaded successfully! Starting analysis...")
                         
-                        # Get detailed recommendations
-                        detailed_recs = get_detailed_recommendations(analysis_result, st.session_state.user_profile)
-                        if detailed_recs:
-                            st.session_state.detailed_recommendations = detailed_recs
+                        # Analyze lab report
+                        analysis_result = analyze_lab_report(temp_path)
                         
-                        st.markdown("""
-                        <div class="success-banner">
-                            <h3>✅ Analysis Complete!</h3>
-                            <p>Your lab report has been analyzed successfully. Check the results panel to see your personalized health insights.</p>
+                        if analysis_result:
+                            st.session_state.analysis_results = analysis_result
+                            st.session_state.original_image = uploaded_file.getvalue()
+                            st.session_state.analysis_complete = True
+                            
+                            # Get detailed recommendations
+                            detailed_recs = get_detailed_recommendations(analysis_result, st.session_state.user_profile)
+                            if detailed_recs:
+                                st.session_state.detailed_recommendations = detailed_recs
+                            
+                            # Show completion message
+                            st.markdown("""
+                            <div class="custom-card banner-success">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <div style="font-size: 2rem;">✅</div>
+                                    <div>
+                                        <h3 style="margin: 0; color: white;">Analysis Complete!</h3>
+                                        <p style="margin: 0.5rem 0 0 0; color: white; opacity: 0.9;">
+                                            Your lab report has been successfully analyzed. Check the results panel for detailed insights.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                            # Auto-scroll to results (simulate)
+                            time.sleep(0.5)
+                            st.rerun()
+                        else:
+                            st.markdown("""
+                            <div class="custom-card banner-error">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <div style="font-size: 2rem;">❌</div>
+                                    <div>
+                                        <h3 style="margin: 0; color: white;">Analysis Failed</h3>
+                                        <p style="margin: 0.5rem 0 0 0; color: white; opacity: 0.9;">
+                                            Unable to analyze the lab report. Please try with a clearer image or different format.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                        
+                    except Exception as e:
+                        st.markdown(f"""
+                        <div class="custom-card banner-error">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div style="font-size: 2rem;">🚨</div>
+                                <div>
+                                    <h3 style="margin: 0; color: white;">Analysis Error</h3>
+                                    <p style="margin: 0.5rem 0 0 0; color: white; opacity: 0.9;">
+                                        Analysis failed: {str(e)}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                         """, unsafe_allow_html=True)
-                    else:
-                        st.markdown("""
-                        <div class="error-banner">
-                            <h3>❌ Analysis Failed</h3>
-                            <p>We couldn't analyze your lab report. Please try uploading a clearer image with better lighting and readable text.</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-                    
-                except Exception as e:
-                    st.markdown(f"""
-                    <div class="error-banner">
-                        <h3>🚨 Analysis Error</h3>
-                        <p>An error occurred during analysis: {str(e)}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                finally:
-                    # Clean up temp file
-                    if os.path.exists(temp_path):
-                        os.unlink(temp_path)
+                    finally:
+                        # Clean up temp file
+                        if os.path.exists(temp_path):
+                            os.unlink(temp_path)
     
     with col2:
-        st.markdown('<div class="section-header">📊 Your Health Insights</div>', unsafe_allow_html=True)
+        # Results section
+        create_results_section()
         
         # Display results if available
         if st.session_state.analysis_results:
+            # Analysis results
             st.markdown("""
-            <div class="results-section">
+            <div class="custom-card">
+                <div class="section-title">🔬 Lab Report Analysis</div>
+            </div>
             """, unsafe_allow_html=True)
             
-            # Lab Report Analysis
-            st.markdown("### 🔬 Lab Report Analysis")
-            st.markdown(st.session_state.analysis_results)
-            
-            st.markdown("</div>", unsafe_allow_html=True)
+            # Display the analysis results in a styled container
+            st.markdown(f"""
+            <div class="custom-card">
+                <div style="color: var(--text-primary);">
+                    {st.session_state.analysis_results}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
             
             # Display detailed recommendations if available
             if st.session_state.detailed_recommendations:
-                st.markdown("---")
                 st.markdown("""
-                <div class="results-section">
+                <div class="custom-card">
+                    <div class="section-title">🎯 Personalized Recommendations</div>
+                </div>
                 """, unsafe_allow_html=True)
                 
-                st.markdown("### 🎯 Personalized Recommendations")
-                st.markdown(st.session_state.detailed_recommendations)
-                
-                st.markdown("</div>", unsafe_allow_html=True)
+                st.markdown(f"""
+                <div class="custom-card">
+                    <div style="color: var(--text-primary);">
+                        {st.session_state.detailed_recommendations}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
             
             # PDF download section
             if st.session_state.original_image:
-                st.markdown("---")
-                st.markdown('<div class="section-header">📄 Download Complete Report</div>', unsafe_allow_html=True)
-                
                 st.markdown("""
-                <div class="info-banner">
-                    <p><strong>📥 Get Your Complete Health Report</strong></p>
-                    <p>Download a comprehensive PDF report with your lab analysis and personalized recommendations for your records.</p>
+                <div class="custom-card">
+                    <div class="section-title">📄 Download Complete Report</div>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Get a comprehensive PDF report with all your results and recommendations.
+                    </p>
                 </div>
                 """, unsafe_allow_html=True)
                 
@@ -970,157 +1265,47 @@ def main():
                         file_name=download_filename,
                         mime="application/pdf",
                         help="Download a comprehensive PDF report with analysis and recommendations",
+                        type="primary",
                         use_container_width=True
                     )
         else:
+            # Placeholder with instructions
             st.markdown("""
-            <div class="info-banner">
-                <h3>👋 Welcome to LabAnalyzer!</h3>
-                <p>Upload a lab report image and click 'Analyze Lab Report' to see your personalized health insights here.</p>
-                <br>
-                <p><strong>What you'll get:</strong></p>
-                <ul>
-                    <li>✅ Clear explanation of all your lab values</li>
-                    <li>🎯 Personalized lifestyle recommendations</li>
-                    <li>🥗 Specific dietary suggestions based on your results</li>
-                    <li>⚕️ Guidance on when to see a doctor</li>
-                    <li>📄 Complete downloadable health report</li>
+            <div class="custom-card" style="text-align: center; padding: 3rem 1rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">📊</div>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Ready for Analysis</h3>
+                <p style="color: var(--text-secondary); line-height: 1.6;">
+                    Upload your lab report image and click "Analyze Lab Report" to get:
+                </p>
+                <ul style="color: var(--text-secondary); text-align: left; margin: 1rem 0; line-height: 1.8;">
+                    <li>✅ Easy-to-understand explanations of your results</li>
+                    <li>🎯 Personalized health recommendations</li>
+                    <li>🥗 Specific dietary and lifestyle advice</li>
+                    <li>📄 Comprehensive PDF report for your records</li>
                 </ul>
             </div>
             """, unsafe_allow_html=True)
     
-    # Health tips section (only show after analysis)
-    if st.session_state.analysis_results:
-        st.markdown("---")
-        st.markdown('<div class="section-header">🏥 Important Health Reminders</div>', unsafe_allow_html=True)
-        
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.markdown("""
-            <div class="metric-card">
-                <h4>🥗 Nutrition Focus</h4>
-                <p><strong>Based on your specific lab results:</strong></p>
-                <ul>
-                    <li>Follow the dietary recommendations provided</li>
-                    <li>Stay hydrated with adequate water intake</li>
-                    <li>Focus on nutrient-dense foods</li>
-                    <li>Avoid foods that may worsen your specific conditions</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col2:
-            st.markdown("""
-            <div class="metric-card">
-                <h4>🏃 Exercise & Activity</h4>
-                <p><strong>Tailored to your lab findings:</strong></p>
-                <ul>
-                    <li>Follow the exercise plan provided</li>
-                    <li>Monitor your response to activity changes</li>
-                    <li>Start gradually and increase intensity slowly</li>
-                    <li>Track improvements in energy levels</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col3:
-            st.markdown("""
-            <div class="metric-card">
-                <h4>😴 Lifestyle Factors</h4>
-                <p><strong>Specific to your health needs:</strong></p>
-                <ul>
-                    <li>Prioritize quality sleep (7-9 hours)</li>
-                    <li>Manage stress through recommended techniques</li>
-                    <li>Follow up with healthcare providers as advised</li>
-                    <li>Schedule retesting as recommended</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
+    # Health tips section (only show if analysis is complete)
+    if st.session_state.analysis_complete:
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        create_health_tips_section()
     
     # How it works section
-    st.markdown("---")
-    st.markdown("""
-    <div class="how-it-works">
-        <h3>🔬 How LabAnalyzer Works</h3>
-        <br>
-        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-            <div class="step-indicator">1</div>
-            <div>
-                <h4>Upload Your Lab Report</h4>
-                <p>Take a clear photo of your lab report or upload an existing image file (JPG, PNG, PDF supported)</p>
-            </div>
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-            <div class="step-indicator">2</div>
-            <div>
-                <h4>Add Your Profile (Optional)</h4>
-                <p>Provide your age, gender, activity level, and health conditions for more personalized recommendations</p>
-            </div>
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-            <div class="step-indicator">3</div>
-            <div>
-                <h4>Get AI-Powered Analysis</h4>
-                <p>Our advanced AI analyzes your specific lab values and identifies what's normal, high, or low</p>
-            </div>
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-            <div class="step-indicator">4</div>
-            <div>
-                <h4>Receive Personalized Recommendations</h4>
-                <p>Get specific dietary advice, exercise plans, and lifestyle changes based on your actual lab results</p>
-            </div>
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-            <div class="step-indicator">5</div>
-            <div>
-                <h4>Download Your Complete Report</h4>
-                <p>Get a comprehensive PDF report with all findings and recommendations for your records</p>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Key features banner
-    st.markdown("""
-    <div class="info-banner">
-        <h3>🌟 Key Features</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
-            <div>
-                <h4>🎯 Personalized Analysis</h4>
-                <p>Recommendations based on your specific lab results, not generic advice</p>
-            </div>
-            <div>
-                <h4>🔍 Detailed Explanations</h4>
-                <p>Complex medical terms explained in simple, easy-to-understand language</p>
-            </div>
-            <div>
-                <h4>📊 Visual Health Status</h4>
-                <p>Clear indicators showing which values are normal, high, or low</p>
-            </div>
-            <div>
-                <h4>⚕️ Professional Guidance</h4>
-                <p>Advice on when to see a doctor and which specialist to consult</p>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    create_how_it_works_section()
     
     # Footer
     st.markdown("""
-    <div class="footer">
-        <h4>🧪 LabAnalyzer</h4>
-        <p>© 2025 LabAnalyzer - Medical Lab Report Analyzer</p>
-        <p>Powered by Gemini AI + Tavily | Built with Streamlit</p>
-        <br>
-        <p style="font-size: 0.9em; color: #6c757d;">
-            <strong>Remember:</strong> This tool is designed to help you understand your lab results better, 
-            but it should never replace professional medical advice. Always consult with your healthcare provider 
-            for proper medical interpretation and treatment decisions.
-        </p>
+    <div style="text-align: center; margin-top: 3rem; padding: 2rem; color: var(--text-secondary);">
+        <hr style="border: none; height: 1px; background: var(--border-color); margin: 2rem 0;">
+        <p style="margin: 0;">© 2025 LabAnalyzer - Medical Lab Report Analyzer</p>
+        <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Powered by Gemini AI + Tavily | Built with ❤️ for Better Health</p>
     </div>
     """, unsafe_allow_html=True)
+    
+    # Close main container
+    st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
