@@ -260,7 +260,7 @@ st.markdown("""
     
     /* Ensure proper text contrast for main content */
     .stMarkdown, .stText, p, span, div {
-        color: #212529 !important;
+        color: #ffffff !important;
     }
     
     /* Sidebar styling */
