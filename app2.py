@@ -107,15 +107,20 @@ st.markdown("""
         background: linear-gradient(135deg, #e7f1ff 0%, #ffffff 100%);
     }
     
-    /* Results section with better contrast */
-    .results-section {
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        border: 2px solid #dee2e6;
-        border-radius: 15px;
-        padding: 2rem;
-        margin: 1rem 0;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-        color: #212529 !important;
+   .results-section {
+    background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+    border: 2px solid #dee2e6;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 1rem 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    color: #ffffff !important;
+}
+
+.results-section * {
+    color: #ffffff !important;
+}
+
     }
     
     /* Make all text within results section high contrast */
