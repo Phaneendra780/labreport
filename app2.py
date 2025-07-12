@@ -285,7 +285,7 @@ st.markdown("""
     }
     
     .metric-card p {
-        color: #2c3e50 !important;
+        color: #fffff !important;
         line-height: 1.5 !important;
     }
     
