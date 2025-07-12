@@ -100,12 +100,13 @@ st.markdown("""
         text-align: center;
         margin: 1rem 0;
         transition: all 0.3s ease;
-        color:#ffffff;
+        
     }
     
     .upload-section:hover {
         border-color: #007bff;
         background: linear-gradient(135deg, #e7f1ff 0%, #ffffff 100%);
+        color:#ffffff;
     }
     
    .results-section {
