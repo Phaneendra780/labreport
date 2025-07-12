@@ -116,17 +116,21 @@ st.markdown("""
         background: linear-gradient(135deg, #e7f1ff 0%, #ffffff 100%);
     }
     
-    /* Results section */
-.results-section {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    border: 1px solid #dee2e6;
-    border-radius: 15px;
-    padding: 2rem;
-    margin: 1rem 0;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-    color: white; /* <-- This line sets the text color */
-}
-
+    /* Results section with white text */
+    .results-section {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        border: 1px solid #dee2e6;
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 1rem 0;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        color: white !important;
+    }
+    
+    /* Make all text within results section white */
+    .results-section * {
+        color: white !important;
+    }
     
     /* Profile section */
     .profile-section {
@@ -262,7 +266,6 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
-
 # API Keys
 TAVILY_API_KEY = st.secrets.get("TAVILY_API_KEY")
 GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
