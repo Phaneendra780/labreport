@@ -20,390 +20,407 @@ import re
 st.markdown("""
 <style>
     /* Main background */
-    .main {
-        background-color: #ffffff;
-        color: #1a1a1a;
-    }
-    
-    /* Header styling */
-    .main-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        margin-bottom: 2rem;
-        text-align: center;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    }
-    
-    /* Info banners (non-clickable) */
-    .info-banner {
-        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-        border: 2px solid #2196f3;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        color: #0d47a1;
-        box-shadow: 0 4px 16px rgba(33,150,243,0.15);
-    }
-    
-    /* Warning banners */
-    .warning-banner {
-        background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-        border: 2px solid #ff9800;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        color: #e65100;
-        box-shadow: 0 4px 16px rgba(255,152,0,0.15);
-    }
-    
-    /* Success banners */
-    .success-banner {
-        background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
-        border: 2px solid #4caf50;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        color: #1b5e20;
-        box-shadow: 0 4px 16px rgba(76,175,80,0.15);
-    }
-    
-    /* Error banners */
-    .error-banner {
-        background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-        border: 2px solid #f44336;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        color: #c62828;
-        box-shadow: 0 4px 16px rgba(244,67,54,0.15);
-    }
-    
-    /* Section headers */
-    .section-header {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-left: 5px solid #6c757d;
-        padding: 1rem 1.5rem;
-        margin: 1.5rem 0 1rem 0;
-        border-radius: 0 8px 8px 0;
-        color: #495057;
-        font-weight: 600;
-    }
-    
-    /* Upload area styling */
-    .upload-section {
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        border: 2px dashed #6c757d;
-        border-radius: 15px;
-        padding: 2rem;
-        text-align: center;
-        margin: 1rem 0;
-        transition: all 0.3s ease;
-        
-    }
-    
-    .upload-section:hover {
-        border-color: #007bff;
-        background: linear-gradient(135deg, #e7f1ff 0%, #ffffff 100%);
-        color:#ffffff;
-    }
-    
-   .results-section {
-    background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+/* Fixed CSS for LabAnalyzer - Text Color Issues Resolved */
+
+/* Main background */
+.main {
+    background-color: #ffffff;
+    color: #1a1a1a;
+}
+
+/* Header styling */
+.main-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+/* Info banners (non-clickable) */
+.info-banner {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border: 2px solid #2196f3;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    color: #0d47a1;
+    box-shadow: 0 4px 16px rgba(33,150,243,0.15);
+}
+
+/* Warning banners */
+.warning-banner {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border: 2px solid #ff9800;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    color: #e65100;
+    box-shadow: 0 4px 16px rgba(255,152,0,0.15);
+}
+
+/* Success banners */
+.success-banner {
+    background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+    border: 2px solid #4caf50;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    color: #1b5e20;
+    box-shadow: 0 4px 16px rgba(76,175,80,0.15);
+}
+
+/* Error banners */
+.error-banner {
+    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+    border: 2px solid #f44336;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    color: #c62828;
+    box-shadow: 0 4px 16px rgba(244,67,54,0.15);
+}
+
+/* Section headers */
+.section-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-left: 5px solid #6c757d;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0 1rem 0;
+    border-radius: 0 8px 8px 0;
+    color: #495057;
+    font-weight: 600;
+}
+
+/* Upload area styling */
+.upload-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 2px dashed #6c757d;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    margin: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.upload-section:hover {
+    border-color: #007bff;
+    background: linear-gradient(135deg, #e7f1ff 0%, #ffffff 100%);
+}
+
+/* FIXED: Results section with proper text colors */
+.results-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
     border: 2px solid #dee2e6;
     border-radius: 15px;
     padding: 2rem;
     margin: 1rem 0;
     box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-    color: #ffffff !important;
 }
 
+/* FIXED: Specific text color rules for results section */
+.results-section h1,
+.results-section h2,
+.results-section h3,
+.results-section h4,
+.results-section h5,
+.results-section h6 {
+    color: #1a1a1a !important;
+    font-weight: 600 !important;
+}
+
+.results-section p {
+    color: #2c3e50 !important;
+    line-height: 1.6 !important;
+}
+
+.results-section ul,
+.results-section ol {
+    color: #2c3e50 !important;
+}
+
+.results-section li {
+    color: #2c3e50 !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.results-section strong {
+    color: #1a1a1a !important;
+    font-weight: 700 !important;
+}
+
+.results-section em {
+    color: #495057 !important;
+    font-style: italic !important;
+}
+
+/* FIXED: Ensure all text in results section is readable */
 .results-section * {
-    color: #ffffff !important;
+    color: #2c3e50 !important;
 }
 
-    }
-    
-    /* Make all text within results section high contrast */
-    .results-section * {
-        color: #212529 !important;
-    }
-    
-    /* Specific styling for markdown elements in results */
-    .results-section h1,
-    .results-section h2,
-    .results-section h3,
-    .results-section h4,
-    .results-section h5,
-    .results-section h6 {
-        color: #1a1a1a !important;
-        font-weight: 600 !important;
-    }
-    
-    .results-section p {
-        color: #ffffff !important;
-        line-height: 1.6 !important;
-    }
-    
-    .results-section ul,
-    .results-section ol {
-        color: #fffff !important;
-    }
-    
-    .results-section li {
-        color: #fffff !important;
-        margin-bottom: 0.5rem !important;
-    }
-    
-    .results-section strong {
-        color: #1a1a1a !important;
-        font-weight: 700 !important;
-    }
-    
-    .results-section em {
-        color: #495057 !important;
-        font-style: italic !important;
-    }
-    
-    /* Profile section */
-    .profile-section {
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        border: 1px solid #dee2e6;
-        border-radius: 15px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-    }
-    
-    /* Button styling */
-    .stButton > button {
-        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 0.75rem 2rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 16px rgba(0,123,255,0.3);
-    }
-    
-    .stButton > button:hover {
-        background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,123,255,0.4);
-    }
-    
-    /* Download button styling */
-    .stDownloadButton > button {
-        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 0.75rem 2rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 16px rgba(40,167,69,0.3);
-    }
-    
-    .stDownloadButton > button:hover {
-        background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(40,167,69,0.4);
-    }
-    
-    /* High contrast text */
-    .high-contrast-text {
-        color: #212529;
-        font-weight: 500;
-    }
-    
-    /* Lab values styling with better contrast */
-    .lab-value-normal {
-        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-        border: 2px solid #28a745;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-        color: #155724 !important;
-        font-weight: 600;
-    }
-    
-    .lab-value-high {
-        background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
-        border: 2px solid #dc3545;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-        color: #721c24 !important;
-        font-weight: 600;
-    }
-    
-    .lab-value-low {
-        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-        border: 2px solid #ffc107;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-        color: #856404 !important;
-        font-weight: 600;
-    }
-    
-    /* Footer styling */
-    .footer {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-top: 1px solid #dee2e6;
-        padding: 2rem;
-        margin-top: 3rem;
-        text-align: center;
-        color: #6c757d;
-    }
-    
-    /* Ensure proper text contrast for main content */
-    .stMarkdown, .stText, p, span, div {
-        color: #fffff !important;
-    }
-    
-    /* Sidebar styling */
-    .sidebar .sidebar-content {
-        background-color: #f8f9fa;
-    }
-    
-    /* Metric styling */
-    .metric-card {
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-        border: 1px solid #dee2e6;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        text-align: center;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-    }
-    
-    .metric-card h4 {
-        color: #1a1a1a !important;
-        margin-bottom: 1rem !important;
-    }
-    
-    .metric-card p {
-        color: #fffff !important;
-        line-height: 1.5 !important;
-    }
-    
-    .metric-card ul {
-        text-align: left !important;
-    }
-    
-    .metric-card li {
-        color: #495057 !important;
-        margin-bottom: 0.5rem !important;
-    }
-    
-    /* How it works section */
-    .how-it-works {
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        border: 1px solid #dee2e6;
-        border-radius: 15px;
-        padding: 2rem;
-        margin: 2rem 0;
-    }
-    
-    .how-it-works h3 {
-        color: #1a1a1a !important;
-        margin-bottom: 1rem !important;
-    }
-    
-    .how-it-works h4 {
-        color: #2c3e50 !important;
-        margin-bottom: 0.5rem !important;
-    }
-    
-    .how-it-works p {
-        color: #495057 !important;
-        line-height: 1.5 !important;
-    }
-    
-    /* Step indicators */
-    .step-indicator {
-        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-        color: white;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        margin-right: 1rem;
-        flex-shrink: 0;
-    }
-    
-    /* Override Streamlit's default text colors */
-    .stMarkdown h1,
-    .stMarkdown h2,
-    .stMarkdown h3,
-    .stMarkdown h4,
-    .stMarkdown h5,
-    .stMarkdown h6 {
-        color: #1a1a1a !important;
-    }
-    
-    .stMarkdown p {
-        color: #2c3e50 !important;
-    }
-    
-    .stMarkdown ul,
-    .stMarkdown ol {
-        color: #2c3e50 !important;
-    }
-    
-    .stMarkdown li {
-        color: #2c3e50 !important;
-    }
-    
-    .stMarkdown strong {
-        color: #1a1a1a !important;
-        font-weight: 700 !important;
-    }
-    
-    /* Enhance visibility of analysis results */
-    .analysis-content {
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    
-    .analysis-content h3 {
-        color: #1a1a1a !important;
-        border-bottom: 2px solid #007bff;
-        padding-bottom: 0.5rem;
-        margin-bottom: 1rem !important;
-    }
-    
-    .analysis-content h4 {
-        color: #2c3e50 !important;
-        margin-top: 1.5rem !important;
-        margin-bottom: 0.8rem !important;
-    }
-    
-    .analysis-content p {
-        color: white !important;
-        line-height: 1.6 !important;
-        margin-bottom: 1rem !important;
-    }
-    
-    .analysis-content ul {
-        padding-left: 1.5rem !important;
-    }
-    
-    .analysis-content li {
-        color: #495057 !important;
-        margin-bottom: 0.5rem !important;
-        line-height: 1.5 !important;
-    }
-</style>
+/* Override for headings specifically */
+.results-section h1 *,
+.results-section h2 *,
+.results-section h3 *,
+.results-section h4 *,
+.results-section h5 *,
+.results-section h6 * {
+    color: #1a1a1a !important;
+}
+
+/* Profile section */
+.profile-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+/* Button styling */
+.stButton > button {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0,123,255,0.3);
+}
+
+.stButton > button:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+}
+
+/* Download button styling */
+.stDownloadButton > button {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(40,167,69,0.3);
+}
+
+.stDownloadButton > button:hover {
+    background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40,167,69,0.4);
+}
+
+/* Lab values styling with better contrast */
+.lab-value-normal {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border: 2px solid #28a745;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    color: #155724 !important;
+    font-weight: 600;
+}
+
+.lab-value-high {
+    background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
+    border: 2px solid #dc3545;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    color: #721c24 !important;
+    font-weight: 600;
+}
+
+.lab-value-low {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    color: #856404 !important;
+    font-weight: 600;
+}
+
+/* Footer styling */
+.footer {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-top: 1px solid #dee2e6;
+    padding: 2rem;
+    margin-top: 3rem;
+    text-align: center;
+    color: #6c757d;
+}
+
+/* Metric styling */
+.metric-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+
+.metric-card h4 {
+    color: #1a1a1a !important;
+    margin-bottom: 1rem !important;
+}
+
+.metric-card p {
+    color: #2c3e50 !important;
+    line-height: 1.5 !important;
+}
+
+.metric-card ul {
+    text-align: left !important;
+}
+
+.metric-card li {
+    color: #495057 !important;
+    margin-bottom: 0.5rem !important;
+}
+
+/* How it works section */
+.how-it-works {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.how-it-works h3 {
+    color: #1a1a1a !important;
+    margin-bottom: 1rem !important;
+}
+
+.how-it-works h4 {
+    color: #2c3e50 !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.how-it-works p {
+    color: #495057 !important;
+    line-height: 1.5 !important;
+}
+
+/* Step indicators */
+.step-indicator {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+/* FIXED: Override Streamlit's default text colors for better readability */
+.stMarkdown h1,
+.stMarkdown h2,
+.stMarkdown h3,
+.stMarkdown h4,
+.stMarkdown h5,
+.stMarkdown h6 {
+    color: #1a1a1a !important;
+}
+
+.stMarkdown p {
+    color: #2c3e50 !important;
+}
+
+.stMarkdown ul,
+.stMarkdown ol {
+    color: #2c3e50 !important;
+}
+
+.stMarkdown li {
+    color: #2c3e50 !important;
+}
+
+.stMarkdown strong {
+    color: #1a1a1a !important;
+    font-weight: 700 !important;
+}
+
+/* FIXED: Enhanced visibility of analysis results */
+.analysis-content {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.analysis-content h3 {
+    color: #1a1a1a !important;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem !important;
+}
+
+.analysis-content h4 {
+    color: #2c3e50 !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.8rem !important;
+}
+
+.analysis-content p {
+    color: #2c3e50 !important;
+    line-height: 1.6 !important;
+    margin-bottom: 1rem !important;
+}
+
+.analysis-content ul {
+    padding-left: 1.5rem !important;
+}
+
+.analysis-content li {
+    color: #495057 !important;
+    margin-bottom: 0.5rem !important;
+    line-height: 1.5 !important;
+}
+
+/* FIXED: Ensure proper contrast for all text elements */
+.main * {
+    color: #2c3e50;
+}
+
+/* Override for specific elements that need different colors */
+.main h1, .main h2, .main h3, .main h4, .main h5, .main h6 {
+    color: #1a1a1a !important;
+}
+
+.main .info-banner *,
+.main .warning-banner *,
+.main .success-banner *,
+.main .error-banner *,
+.main .section-header * {
+    color: inherit !important;
+}
+
+/* Sidebar styling */
+.sidebar .sidebar-content {
+    background-color: #f8f9fa;
+}
+
+/* FIXED: Remove any remaining problematic color declarations */
+.high-contrast-text {
+    color: #212529 !important;
+    font-weight: 500;
+}
 """, unsafe_allow_html=True)
 
 # API Keys
