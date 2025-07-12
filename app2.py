@@ -148,11 +148,11 @@ st.markdown("""
     
     .results-section ul,
     .results-section ol {
-        color: #2c3e50 !important;
+        color: #fffff !important;
     }
     
     .results-section li {
-        color: #2c3e50 !important;
+        color: #fffff !important;
         margin-bottom: 0.5rem !important;
     }
     
